@@ -167,14 +167,11 @@ class Game {
             this.gameState
         );
 
-        // Sync tower panel
+        // Sync tower panel (check if tower still exists)
         if (this.towerPanel.isVisible() && this.towerPanel.tower) {
             const t = this.towerPanel.tower;
             if (!this.towerManager.towers.includes(t)) {
                 this.towerPanel.hide();
-            } else {
-                this.towerPanel.show(t,
-                    this.towerPanel.container.x, this.towerPanel.container.y);
             }
         }
     }
