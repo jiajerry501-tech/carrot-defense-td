@@ -214,15 +214,10 @@ class Game {
     // ──── Tower Input ────
 
     _selectTowerType(type) {
-        if (this.towerManager.selectedType === type) {
-            this.towerManager.selectedType = null;
-            this.hud.setSelectedType(null);
-            this.previewGfx.visible = false;
-        } else {
-            this.towerManager.selectedType = type;
-            this.hud.setSelectedType(type);
-            this.towerPanel.hide();
-        }
+        // Always select the clicked tower type (no toggle off)
+        this.towerManager.selectedType = type;
+        this.hud.setSelectedType(type);
+        this.towerPanel.hide();
     }
 
     _upgradeTower(tower) {
