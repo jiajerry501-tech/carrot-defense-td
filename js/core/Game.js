@@ -179,7 +179,7 @@ class Game {
     // ──── Events ────
 
     _onEnemyReachEnd(enemy) {
-        this.lives -= Math.ceil(enemy.maxHp / 80);
+        this.lives -= 1;
         this.audio.play('lifeloss');
         if (this.lives <= 0) {
             this.lives = 0;

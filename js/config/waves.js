@@ -3,7 +3,7 @@ const ENEMY_TYPES = {
         name: '小兵',
         hp: 80,
         speed: 80,
-        reward: 10,
+        reward: 15,
         color: 0xff6666,
         size: 10,
     },
@@ -17,9 +17,9 @@ const ENEMY_TYPES = {
     },
     tank: {
         name: '重装兵',
-        hp: 300,
+        hp: 200,
         speed: 45,
-        reward: 25,
+        reward: 30,
         color: 0xcc4444,
         size: 14,
     },
@@ -34,7 +34,7 @@ const ENEMY_TYPES = {
 };
 
 const WAVES = [
-    { enemies: [{ type: 'normal', count: 5, interval: 1.2 }] },
+    { enemies: [{ type: 'normal', count: 4, interval: 1.5 }] },
     { enemies: [{ type: 'normal', count: 7, interval: 1.0 }] },
     {
         enemies: [

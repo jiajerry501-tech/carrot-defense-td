@@ -32,6 +32,6 @@ const CONFIG = {
     CAM_ZOOM_SPEED: 0.08,
 
     // Gameplay
-    START_GOLD: 200,
-    START_LIVES: 20,
+    START_GOLD: 350,
+    START_LIVES: 50,
 };
