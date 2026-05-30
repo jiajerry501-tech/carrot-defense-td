@@ -295,6 +295,10 @@ class Game {
 
     _handleClick(clientX, clientY) {
         const sp = this._clientToGame(clientX, clientY);
+
+        // Ignore taps on HUD areas (top bar / bottom bar)
+        if (sp.y < 44 || sp.y > CONFIG.GAME_HEIGHT - 68) return;
+
         const wp = this.camera.screenToWorld(sp.x, sp.y);
         const gc = this.mapData.pixelToGrid(wp.x, wp.y);
 
@@ -347,6 +351,13 @@ class Game {
 
     _handleMove(clientX, clientY) {
         const sp = this._clientToGame(clientX, clientY);
+
+        // Don't show placement preview on HUD areas
+        if (sp.y < 44 || sp.y > CONFIG.GAME_HEIGHT - 68) {
+            this.previewGfx.visible = false;
+            return;
+        }
+
         const wp = this.camera.screenToWorld(sp.x, sp.y);
         const gc = this.mapData.pixelToGrid(wp.x, wp.y);
 
