@@ -20,8 +20,6 @@ class Game {
         this.app.stage.hitArea = new PIXI.Rectangle(0, 0, CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
 
         const canvas = this.app.view;
-        canvas.style.width = CONFIG.GAME_WIDTH + 'px';
-        canvas.style.height = CONFIG.GAME_HEIGHT + 'px';
 
         // State
         this.gameState = CONFIG.STATE_IDLE;
@@ -37,7 +35,8 @@ class Game {
         this.camera = new Camera(
             this.gameRoot,
             CONFIG.GAME_WIDTH,
-            CONFIG.GAME_HEIGHT
+            CONFIG.GAME_HEIGHT,
+            () => this._getCanvasScale()
         );
 
         // Entity layers (persistent, added to gameRoot)
@@ -117,6 +116,39 @@ class Game {
         this.levelUI.showLevelSelect();
 
         console.log('[Game] 初始化完成');
+
+        // Fit canvas to screen
+        this._fitCanvas();
+        window.addEventListener('resize', () => this._fitCanvas());
+    }
+
+    /** Resize canvas to fill viewport while keeping aspect ratio */
+    _fitCanvas() {
+        const canvas = this.app.view;
+        const parent = canvas.parentElement;
+        const maxW = parent.clientWidth;
+        const maxH = parent.clientHeight;
+        const scaleX = maxW / CONFIG.GAME_WIDTH;
+        const scaleY = maxH / CONFIG.GAME_HEIGHT;
+        const scale = Math.min(scaleX, scaleY);
+        canvas.style.width = Math.floor(CONFIG.GAME_WIDTH * scale) + 'px';
+        canvas.style.height = Math.floor(CONFIG.GAME_HEIGHT * scale) + 'px';
+    }
+
+    /** Get the CSS scale factor of the canvas relative to game resolution */
+    _getCanvasScale() {
+        const rect = this.app.view.getBoundingClientRect();
+        return rect.width / CONFIG.GAME_WIDTH;
+    }
+
+    /** Convert viewport client coordinates to game internal coordinates */
+    _clientToGame(clientX, clientY) {
+        const rect = this.app.view.getBoundingClientRect();
+        const scale = rect.width / CONFIG.GAME_WIDTH;
+        return {
+            x: (clientX - rect.left) / scale,
+            y: (clientY - rect.top) / scale,
+        };
     }
 
     // ──── Level Management ────
@@ -262,11 +294,7 @@ class Game {
     }
 
     _handleClick(clientX, clientY) {
-        const rect = this.app.view.getBoundingClientRect();
-        const sp = {
-            x: clientX - rect.left,
-            y: clientY - rect.top,
-        };
+        const sp = this._clientToGame(clientX, clientY);
         const wp = this.camera.screenToWorld(sp.x, sp.y);
         const gc = this.mapData.pixelToGrid(wp.x, wp.y);
 
@@ -310,18 +338,15 @@ class Game {
 
     _worldToScreen(wx, wy) {
         const cam = this.camera;
+        const scale = this._getCanvasScale();
         return {
-            x: wx * cam.zoom + cam.offsetX,
-            y: wy * cam.zoom + cam.offsetY,
+            x: (wx * cam.zoom + cam.offsetX) * scale,
+            y: (wy * cam.zoom + cam.offsetY) * scale,
         };
     }
 
     _handleMove(clientX, clientY) {
-        const rect = this.app.view.getBoundingClientRect();
-        const sp = {
-            x: clientX - rect.left,
-            y: clientY - rect.top,
-        };
+        const sp = this._clientToGame(clientX, clientY);
         const wp = this.camera.screenToWorld(sp.x, sp.y);
         const gc = this.mapData.pixelToGrid(wp.x, wp.y);
 

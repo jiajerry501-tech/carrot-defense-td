@@ -1,10 +1,11 @@
 class Camera {
-    constructor(targetContainer, viewWidth, viewHeight) {
+    constructor(targetContainer, viewWidth, viewHeight, getScale) {
         this.worldContainer = new PIXI.Container();
         this.worldContainer.addChild(targetContainer);
 
         this.viewWidth = viewWidth;
         this.viewHeight = viewHeight;
+        this.getScale = getScale || (() => 1);
 
         this.offsetX = 0;
         this.offsetY = 0;
@@ -60,8 +61,9 @@ class Camera {
 
         window.addEventListener('mousemove', (e) => {
             if (!this._isDragging) return;
-            this.offsetX = this._dragOffsetX + (e.clientX - this._dragStartX);
-            this.offsetY = this._dragOffsetY + (e.clientY - this._dragStartY);
+            const scale = this.getScale();
+            this.offsetX = this._dragOffsetX + (e.clientX - this._dragStartX) / scale;
+            this.offsetY = this._dragOffsetY + (e.clientY - this._dragStartY) / scale;
             this._updateTransform();
         });
 
@@ -80,9 +82,10 @@ class Camera {
             this.zoom = Math.max(CONFIG.CAM_ZOOM_MIN,
                 Math.min(CONFIG.CAM_ZOOM_MAX, this.zoom));
 
+            const cssScale = this.getScale();
             const rect = canvas.getBoundingClientRect();
-            const mx = e.clientX - rect.left;
-            const my = e.clientY - rect.top;
+            const mx = (e.clientX - rect.left) / cssScale;
+            const my = (e.clientY - rect.top) / cssScale;
             const scale = this.zoom / prevZoom;
             this.offsetX = mx - scale * (mx - this.offsetX);
             this.offsetY = my - scale * (my - this.offsetY);
@@ -106,11 +109,12 @@ class Camera {
 
         canvas.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2) {
+                const scale = this.getScale();
                 for (let i = 0; i < e.touches.length; i++) {
                     const t = e.touches[i];
                     if (t.identifier === this._touchId) {
-                        this.offsetX = this._touchOffsetX + (t.clientX - this._touchStartX);
-                        this.offsetY = this._touchOffsetY + (t.clientY - this._touchStartY);
+                        this.offsetX = this._touchOffsetX + (t.clientX - this._touchStartX) / scale;
+                        this.offsetY = this._touchOffsetY + (t.clientY - this._touchStartY) / scale;
                         this._updateTransform();
                         break;
                     }
