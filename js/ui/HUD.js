@@ -115,7 +115,7 @@ class HUD {
             });
 
             btn.x = x;
-            btn.y = y;
+            btn.y = btnY;
             this.towerButtons[type] = { btn, highlight };
             this.bottomBar.addChild(btn);
         });
