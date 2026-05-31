@@ -15,21 +15,6 @@ class Camera {
         this.shakeIntensity = 0;
         this.shakeTimer = 0;
 
-        // Drag (mouse)
-        this._isDragging = false;
-        this._dragStartX = 0;
-        this._dragStartY = 0;
-        this._dragOffsetX = 0;
-        this._dragOffsetY = 0;
-
-        // Touch drag
-        this._touchId = null;
-        this._touchStartX = 0;
-        this._touchStartY = 0;
-        this._touchOffsetX = 0;
-        this._touchOffsetY = 0;
-        this._touchStartTime = 0;
-
         this._updateTransform();
     }
 
@@ -47,33 +32,9 @@ class Camera {
     }
 
     enableDrag(canvas) {
-        // Mouse drag (middle or right button)
-        canvas.addEventListener('mousedown', (e) => {
-            if (e.button === 1 || e.button === 2) {
-                this._isDragging = true;
-                this._dragStartX = e.clientX;
-                this._dragStartY = e.clientY;
-                this._dragOffsetX = this.offsetX;
-                this._dragOffsetY = this.offsetY;
-                e.preventDefault();
-            }
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (!this._isDragging) return;
-            const scale = this.getScale();
-            this.offsetX = this._dragOffsetX + (e.clientX - this._dragStartX) / scale;
-            this.offsetY = this._dragOffsetY + (e.clientY - this._dragStartY) / scale;
-            this._updateTransform();
-        });
-
-        window.addEventListener('mouseup', () => {
-            this._isDragging = false;
-        });
-
+        // Only keep context menu prevention and wheel zoom
         canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
-        // Scroll wheel zoom
         canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
             const dir = e.deltaY > 0 ? -1 : 1;
@@ -92,40 +53,6 @@ class Camera {
 
             this._updateTransform();
         }, { passive: false });
-
-        // Touch drag (two-finger drag)
-        canvas.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                // Two-finger drag
-                const t = e.touches[0];
-                this._touchId = t.identifier;
-                this._touchStartX = t.clientX;
-                this._touchStartY = t.clientY;
-                this._touchOffsetX = this.offsetX;
-                this._touchOffsetY = this.offsetY;
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2) {
-                const scale = this.getScale();
-                for (let i = 0; i < e.touches.length; i++) {
-                    const t = e.touches[i];
-                    if (t.identifier === this._touchId) {
-                        this.offsetX = this._touchOffsetX + (t.clientX - this._touchStartX) / scale;
-                        this.offsetY = this._touchOffsetY + (t.clientY - this._touchStartY) / scale;
-                        this._updateTransform();
-                        break;
-                    }
-                }
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        canvas.addEventListener('touchend', (e) => {
-            this._touchId = null;
-        });
     }
 
     shake(intensity = 5, duration = 0.3) {

@@ -25,12 +25,8 @@ html, body {
 
 #game-canvas {
     display: block;
-    cursor: grab;
+    cursor: default;
     touch-action: none;
-}
-
-#game-canvas:active {
-    cursor: grabbing;
 }
 
 /* Mobile orientation hint */
